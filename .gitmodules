@@ -1,0 +1,4 @@
+[submodule "Hikka"]
+	path = Hikka
+	url = https://github.com/hikariatama/Hikka
+	branch = v1.6.4

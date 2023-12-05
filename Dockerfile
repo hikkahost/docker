@@ -32,11 +32,14 @@ ENV PYTHONUNBUFFERED=1 \
 
 # prepend poetry and venv to path
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+
+# required for git clone
 RUN apt update && apt upgrade -y && apt install git -y
 
-
+# clone hikka
 RUN git clone https://github.com/hikariatama/Hikka -b v1.6.4
-# depends to normal hikka work
+
+# dependencies for building poetry
 FROM python-base as builder-base
 RUN apt update && apt upgrade -y && apt install \
     curl \
@@ -56,6 +59,7 @@ RUN poetry install --no-dev
 FROM python-base as production
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 
+# deps for hikka
 RUN apt update && apt upgrade -y && apt install \
     curl \
     git \

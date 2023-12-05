@@ -32,14 +32,14 @@ ENV PYTHONUNBUFFERED=1 \
 
 # prepend poetry and venv to path
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+RUN apt update && apt upgrade -y && apt install git -y
 
 
+RUN git clone https://github.com/hikariatama/Hikka -b v1.6.4
 # depends to normal hikka work
 FROM python-base as builder-base
 RUN apt update && apt upgrade -y && apt install \
     curl \
-    git \
-    libmagic1 \
     build-essential -y
 
 # install poetry - respects $POETRY_VERSION & $POETRY_HOME
@@ -47,7 +47,7 @@ RUN curl -sSL https://install.python-poetry.org | python -
 
 # copy project requirement files here to ensure they will be cached.
 WORKDIR $PYSETUP_PATH
-COPY Hikka/poetry.lock Hikka/pyproject.toml ./
+COPY --from=python-base Hikka/poetry.lock Hikka/pyproject.toml ./
 
 # install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
 RUN poetry install --no-dev
@@ -56,9 +56,15 @@ RUN poetry install --no-dev
 FROM python-base as production
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 
+RUN apt update && apt upgrade -y && apt install \
+    curl \
+    git \
+    libmagic1 \
+    neofetch -y --fix-missing --no-install-recommends
+
 RUN mkdir /data && cd /data
 WORKDIR /data/Hikka
-COPY /Hikka .
+COPY --from=builder-base /Hikka .
 
 EXPOSE 8080
 

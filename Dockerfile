@@ -26,7 +26,7 @@ ENV PYTHONUNBUFFERED=1 \
     PYSETUP_PATH="/opt/pysetup" \
     VENV_PATH="/opt/pysetup/.venv" \
     # Hikka
-    #DOCKER=true \
+    DOCKER=true \
     GIT_PYTHON_REFRESH=quiet \
     HIKKAHOST=true
 

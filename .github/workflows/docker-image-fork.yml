@@ -1,10 +1,10 @@
-name: Docker Image CI [fork]
+name: Docker Image CI fork
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "fork-codrago" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "fork-codrago" ]
 
 jobs:
   build:

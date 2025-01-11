@@ -9,7 +9,7 @@ RUN apt-get update && \
 # Очищаем кэш apt для уменьшения размера образа
 RUN rm -rf /var/lib/apt/lists/ /var/cache/apt/archives/ /tmp/*
 # Клонируем репозиторий Hikka
-RUN git clone https://github.com/coddrago/Hikka /Hikka
+RUN git clone https://github.com/coddrago/Heroku /Hikka
 # Создаем виртуальное окружение Python
 RUN python -m venv /venv
 # Устанавливаем зависимости проекта

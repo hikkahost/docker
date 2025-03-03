@@ -1,6 +1,6 @@
 # -------------------------------
-# Используем образ python:3.8-slim-buster как базовый для этапа сборки
-FROM python:3.8-slim-buster as builder
+# Используем образ python:3.10-slim как базовый для этапа сборки
+FROM python:3.10-slim as builder
 # Отключаем кэширование pip, чтобы уменьшить размер образа
 ENV PIP_NO_CACHE_DIR=1
 # Устанавливаем необходимые пакеты для сборки Python пакетов и git
@@ -17,7 +17,7 @@ RUN /venv/bin/pip install --no-warn-script-location --no-cache-dir -r /Hikka/req
 
 # -------------------------------
 # Используем другой базовый образ для финального контейнера
-FROM python:3.8-slim-buster
+FROM python:3.10-slim
 # Устанавливаем необходимые пакеты для работы приложения
 RUN apt-get update && \
     apt-get install -y --no-install-recommends --fix-missing \

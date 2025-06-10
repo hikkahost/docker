@@ -11,3 +11,5 @@ docker run --restart=unless-stopped --name {name} -p {output port}:8080 --detach
 <img src="https://github.com/hikariatama/assets/raw/master/install_qr.gif" height="256">
 
 <hr>
+
+v1.7.x

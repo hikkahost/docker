@@ -8,12 +8,12 @@ RUN apt-get update && \
     apt-get install -y --fix-missing --no-install-recommends git python3-dev gcc
 # Очищаем кэш apt для уменьшения размера образа
 RUN rm -rf /var/lib/apt/lists/ /var/cache/apt/archives/ /tmp/*
-# Клонируем репозиторий Hikka
-RUN git clone https://github.com/coddrago/Heroku /Hikka
+# Клонируем репозиторий
+RUN git clone https://github.com/coddrago/Heroku /Heroku
 # Создаем виртуальное окружение Python
 RUN python -m venv /venv
 # Устанавливаем зависимости проекта
-RUN /venv/bin/pip install --no-warn-script-location --no-cache-dir -r /Hikka/requirements.txt
+RUN /venv/bin/pip install --no-warn-script-location --no-cache-dir -r /Heroku/requirements.txt
 
 # -------------------------------
 # Используем другой базовый образ для финального контейнера
@@ -36,12 +36,12 @@ ENV DOCKER=true \
     GIT_PYTHON_REFRESH=quiet \
     PIP_NO_CACHE_DIR=1
 # Копируем собранное приложение и виртуальное окружение из этапа сборки
-COPY --from=builder /Hikka /Hikka
-COPY --from=builder /venv /Hikka/venv
+COPY --from=builder /Heroku /Heroku
+COPY --from=builder /venv /Heroku/venv
 # Устанавливаем рабочую директорию
-WORKDIR /Hikka
+WORKDIR /Heroku
 # Открываем порт 8080 для доступа к приложению
 EXPOSE 8080
 
 # Определяем команду запуска приложения
-CMD ["python3", "-m", "hikka"]
+CMD ["python3", "-m", "heroku"]

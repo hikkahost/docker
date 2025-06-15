@@ -12,4 +12,3 @@ docker run --restart=unless-stopped --name {name} -p {output port}:8080 --detach
 
 <hr>
 
-v1.7.x

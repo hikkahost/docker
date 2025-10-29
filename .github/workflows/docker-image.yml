@@ -33,6 +33,8 @@ jobs:
           else
             name="${{ github.event.inputs.image_name || 'fork-codrago' }}"
             echo "images=[\"$name\"]" >> $GITHUB_OUTPUT
+          fi
+
 
   build:
     runs-on: ubuntu-latest

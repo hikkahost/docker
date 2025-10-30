@@ -10,11 +10,11 @@ on:
       image_name:
         description: "Choose docker image to update"
         required: true
-        default: "fork-codrago"
+        default: "heroku"
         type: choice
         options:
           - hikka
-          - fork-codrago
+          - heroku
           - legacy
           - geektg
   schedule:
@@ -29,9 +29,9 @@ jobs:
       - id: set
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            echo 'images=["fork-codrago","legacy"]' >> $GITHUB_OUTPUT
+            echo 'images=["heroku","legacy"]' >> $GITHUB_OUTPUT
           else
-            name="${{ github.event.inputs.image_name || 'fork-codrago' }}"
+            name="${{ github.event.inputs.image_name || 'heroku' }}"
             echo "images=[\"$name\"]" >> $GITHUB_OUTPUT
           fi
 
@@ -68,4 +68,4 @@ jobs:
           file: ./${{ matrix.image }}/Dockerfile
           platforms: linux/amd64,linux/arm64/v8
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hikka:${{ matrix.image }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hikkahost:${{ matrix.image }}

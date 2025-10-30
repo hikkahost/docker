@@ -8,8 +8,10 @@ RUN apt-get update && \
     apt-get install -y --fix-missing --no-install-recommends git python3-dev gcc
 # Очищаем кэш apt для уменьшения размера образа
 RUN rm -rf /var/lib/apt/lists/ /var/cache/apt/archives/ /tmp/*
-# Клонируем репозиторий Hikka
-RUN git clone https://github.com/hikariatama/Hikka /Hikka
+# Клонируем репозиторий Hikka и откаываемся к более старому коммиту где не вырезана часть функционала
+RUN git clone https://github.com/hikariatama/hikka /Hikka && \
+    cd /Hikka && \
+    git checkout c13cd19d1293d868bc1c6776d0d659f98f4201f2
 # Создаем виртуальное окружение Python
 RUN python -m venv /venv
 # Устанавливаем зависимости проекта
@@ -23,7 +25,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends --fix-missing \
     curl libcairo2 git ffmpeg libmagic1 \
     libavcodec-dev libavutil-dev libavformat-dev \
-    libswscale-dev libavdevice-dev neofetch wkhtmltopdf gcc python3-dev
+    libswscale-dev libavdevice-dev gcc python3-dev
 # Устанавливаем Node.js
 RUN curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh && \
     bash nodesource_setup.sh && \

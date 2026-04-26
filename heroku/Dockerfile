@@ -5,7 +5,7 @@ FROM python:3.14-slim AS builder
 ENV PIP_NO_CACHE_DIR=1
 # Устанавливаем необходимые пакеты для сборки Python пакетов и git
 RUN apt-get update && \
-    apt-get install -y --fix-missing --no-install-recommends git python3-dev gcc
+    apt-get install -y --fix-missing --no-install-recommends git gcc
 # Очищаем кэш apt для уменьшения размера образа
 RUN rm -rf /var/lib/apt/lists/ /var/cache/apt/archives/ /tmp/*
 # Клонируем репозиторий
@@ -23,7 +23,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends --fix-missing \
     curl libcairo2 git ffmpeg libmagic1 \
     libavcodec-dev libavutil-dev libavformat-dev \
-    libswscale-dev libavdevice-dev gcc python3-dev
+    libswscale-dev libavdevice-dev gcc
 # Устанавливаем Node.js
 RUN curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh && \
     bash nodesource_setup.sh && \
@@ -38,11 +38,11 @@ ENV DOCKER=true \
     PIP_NO_CACHE_DIR=1
 # Копируем собранное приложение и виртуальное окружение из этапа сборки
 COPY --from=builder /Heroku /Heroku
-COPY --from=builder /venv /Heroku/venv
+COPY --from=builder /venv /venv
 # Устанавливаем рабочую директорию
 WORKDIR /Heroku
 # Открываем порт 8080 для доступа к приложению
 EXPOSE 8080
 
-# Определяем команду запуска приложения
-CMD ["python3", "-m", "heroku"]
+# Определяем команду запуска приложения (из заранее собранного venv)
+CMD ["/venv/bin/python", "-m", "heroku"]

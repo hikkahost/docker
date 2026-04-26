@@ -5,13 +5,15 @@ FROM python:3.14-slim AS builder
 ENV PIP_NO_CACHE_DIR=1
 # Устанавливаем необходимые пакеты для сборки Python пакетов и git
 RUN apt-get update && \
-    apt-get install -y --fix-missing --no-install-recommends git gcc
+    apt-get install -y --fix-missing --no-install-recommends git build-essential
 # Очищаем кэш apt для уменьшения размера образа
 RUN rm -rf /var/lib/apt/lists/ /var/cache/apt/archives/ /tmp/*
 # Клонируем репозиторий
 RUN git clone https://github.com/coddrago/Heroku /Heroku
 # Создаем виртуальное окружение Python
 RUN python -m venv /venv
+# Обновляем инструменты сборки wheels для pyproject-пакетов
+RUN /venv/bin/pip install --no-cache-dir --upgrade pip setuptools wheel
 # Устанавливаем зависимости проекта
 RUN /venv/bin/pip install --no-warn-script-location --no-cache-dir -r /Heroku/requirements.txt
 

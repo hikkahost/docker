@@ -41,10 +41,15 @@ ENV DOCKER=true \
 # Копируем собранное приложение и виртуальное окружение из этапа сборки
 COPY --from=builder /Heroku /Heroku
 COPY --from=builder /venv /venv
+# Привязываем python/pip и python3/pip3 к venv
+RUN ln -sf /venv/bin/python /usr/local/bin/python && \
+    ln -sf /venv/bin/python /usr/local/bin/python3 && \
+    ln -sf /venv/bin/pip /usr/local/bin/pip && \
+    ln -sf /venv/bin/pip /usr/local/bin/pip3
 # Устанавливаем рабочую директорию
 WORKDIR /Heroku
 # Открываем порт 8080 для доступа к приложению
 EXPOSE 8080
 
-# Определяем команду запуска приложения (из заранее собранного venv)
-CMD ["/venv/bin/python", "-m", "heroku"]
+# Определяем команду запуска приложения
+CMD ["python3", "-m", "heroku"]

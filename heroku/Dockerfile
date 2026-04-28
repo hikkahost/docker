@@ -35,7 +35,8 @@ RUN rm -rf /var/lib/apt/lists/ /var/cache/apt/archives/ /tmp/*
 ENV DOCKER=true \
     HIKKAHOST=true \
     GIT_PYTHON_REFRESH=quiet \
-    PIP_NO_CACHE_DIR=1
+    PIP_NO_CACHE_DIR=1 \
+    PATH="/Heroku/venv/bin:$PATH"
 # Копируем собранное приложение и виртуальное окружение из этапа сборки
 COPY --from=builder /Heroku /Heroku
 COPY --from=builder /venv /Heroku/venv

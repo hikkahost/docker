@@ -3,43 +3,59 @@
 FROM python:3.14-slim AS builder
 # Отключаем кэширование pip, чтобы уменьшить размер образа
 ENV PIP_NO_CACHE_DIR=1
+
 # Устанавливаем необходимые пакеты для сборки Python пакетов и git
 RUN apt-get update && \
     apt-get install -y --fix-missing --no-install-recommends git python3-dev gcc
 # Очищаем кэш apt для уменьшения размера образа
 RUN rm -rf /var/lib/apt/lists/ /var/cache/apt/archives/ /tmp/*
+
 # Клонируем репозиторий
 RUN git clone https://github.com/coddrago/Heroku /Heroku
+
 # Создаем виртуальное окружение Python
-RUN python -m venv /venv
-# Устанавливаем зависимости проекта
+RUN python3 -m venv /venv
+
+# Обновляем pip в окружении
+RUN /venv/bin/pip install --upgrade pip
+
+# Устанавливаем зависимости проекта прямо в виртуальное окружение
 RUN /venv/bin/pip install --no-warn-script-location --no-cache-dir -r /Heroku/requirements.txt
 
 # -------------------------------
 # Используем другой базовый образ для финального контейнера
 FROM python:3.14-slim
+
 # Устанавливаем необходимые пакеты для работы приложения
 RUN apt-get update && \
     apt-get install -y --no-install-recommends --fix-missing \
     curl libcairo2 git ffmpeg libmagic1 \
     libavcodec-dev libavutil-dev libavformat-dev \
     libswscale-dev libavdevice-dev gcc python3-dev
+
 # Устанавливаем Node.js
 RUN curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh && \
     bash nodesource_setup.sh && \
     apt-get install -y nodejs && \
     rm nodesource_setup.sh
+
 # Очищаем кэш apt для уменьшения размера образа
 RUN rm -rf /var/lib/apt/lists/ /var/cache/apt/archives/ /tmp/*
+
+# Копируем собранное приложение и виртуальное окружение
+COPY --from=builder /Heroku /Heroku
+COPY --from=builder /venv /venv
+
 # Устанавливаем переменные окружения для работы приложения
+# VIRTUAL_ENV и PATH гарантируют, что pip и python3 будут работать внутри /venv,
+# и установка новых модулей (плагинов) не сломается о защиту системных пакетов в новых версиях Python.
 ENV DOCKER=true \
     HIKKAHOST=true \
     GIT_PYTHON_REFRESH=quiet \
     PIP_NO_CACHE_DIR=1 \
-    PATH="/Heroku/venv/bin:$PATH"
-# Копируем собранное приложение и виртуальное окружение из этапа сборки
-COPY --from=builder /Heroku /Heroku
-COPY --from=builder /venv /Heroku/venv
+    VIRTUAL_ENV="/venv" \
+    PATH="/venv/bin:$PATH"
+
 # Устанавливаем рабочую директорию
 WORKDIR /Heroku
 # Открываем порт 8080 для доступа к приложению
